@@ -1,0 +1,39 @@
+# Node modules
+node_modules/
+*/node_modules/
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Build outputs
+dist/
+build/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Docker
+*.mbtiles
+
+# Large data files - OSM files are too big for GitHub
+data/*.osm
+data/*.pbf
+
+# Temp files
+tmp/
+temp/
+*.tmp

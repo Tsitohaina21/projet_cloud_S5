@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte Antananarivo - Gestion Travaux Routiers</title>
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <!-- FontAwesome pour les icônes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Panneau d'authentification -->
+    <div id="authPanel" class="auth-panel">
+        <div id="loginForm">
+            <h3>🔐 Connexion</h3>
+            <input type="email" id="loginEmail" placeholder="Email">
+            <input type="password" id="loginPassword" placeholder="Mot de passe">
+            <button class="btn-login" onclick="login()">Se connecter</button>
+            <button class="btn-register" onclick="showRegisterForm()">S'inscrire</button>
+            <div id="loginError" class="error-message"></div>
+        </div>
+        
+        <div id="registerForm" class="hidden">
+            <h3>📝 Inscription</h3>
+            <input type="text" id="registerNom" placeholder="Nom">
+            <input type="text" id="registerPrenom" placeholder="Prénom">
+            <input type="email" id="registerEmail" placeholder="Email">
+            <input type="password" id="registerPassword" placeholder="Mot de passe">
+            <button class="btn-register" onclick="register()">Créer un compte</button>
+            <button class="btn-login" onclick="showLoginForm()">Retour</button>
+            <div id="registerError" class="error-message"></div>
+        </div>
+        
+        <div id="userPanel" class="hidden">
+            <div class="user-info">
+                <strong id="userName"></strong><br>
+                <small id="userRole"></small>
+            </div>
+            <button class="btn-logout" onclick="logout()">Se déconnecter</button>
+        </div>
+    </div>
+
+    <!-- Panneau d'informations -->
+    <div class="info-panel">
+        <h3>📊 Récapitulatif</h3>
+        <p><strong>Nombre de points:</strong> <span id="nbPoints">0</span></p>
+        <p><strong>Surface totale:</strong> <span id="surfaceTotal">0</span> m²</p>
+        <p><strong>Avancement:</strong> <span id="avancement">0</span>%</p>
+        <p><strong>Budget total:</strong> <span id="budgetTotal">0</span> Ar</p>
+    </div>
+
+    <!-- Carte -->
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="js/app.js"></script>
