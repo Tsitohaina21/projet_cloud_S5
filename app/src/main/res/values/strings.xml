@@ -1,0 +1,23 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">Antananarivo Maps</string>
+  <string name="login_title">Connexion</string>
+  <string name="hint_email">Email</string>
+  <string name="hint_password">Mot de passe</string>
+  <string name="hint_confirm_password">Confirmer le mot de passe</string>
+  <string name="action_login">Se connecter</string>
+  <string name="action_register">Creer un compte</string>
+  <string name="toggle_register">Pas de compte ? Inscris-toi</string>
+  <string name="toggle_login">Deja un compte ? Connecte-toi</string>
+  <string name="error_missing_fields">Veuillez remplir tous les champs</string>
+  <string name="error_password_mismatch">Les mots de passe ne correspondent pas</string>
+  <string name="error_generic">Une erreur est survenue</string>
+  <string name="action_logout">Deconnexion</string>
+  <string name="action_profile">Profil</string>
+  <string name="welcome_default">Bienvenue</string>
+  <string name="welcome_with_email">Bienvenue %1$s</string>
+  <string name="profile_title">Profil utilisateur</string>
+  <string name="profile_email_label">Email</string>
+  <string name="profile_uid_label">Identifiant Firebase (UID)</string>
+  <string name="action_back">Retour</string>
+</resources>

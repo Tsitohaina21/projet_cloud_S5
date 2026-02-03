@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "153922305692",
+    "project_id": "myapp1-e329c",
+    "storage_bucket": "myapp1-e329c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153922305692:android:e6fe4b1b65e92c32def759",
+        "android_client_info": {
+          "package_name": "com.clouds5.antananarivo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkhNxMh5RAleFuOIZLiRJfQ-E8JX9sh3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153922305692:android:bae82c196bda55e2def759",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBkhNxMh5RAleFuOIZLiRJfQ-E8JX9sh3U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
