@@ -8,6 +8,7 @@ ARG uid=1000
 RUN apt-get update && apt-get install -y \
     git \
     curl \
+    libcurl4-openssl-dev \
     libpq-dev \
     libpng-dev \
     libonig-dev \
@@ -18,7 +19,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd
+RUN docker-php-ext-install pdo pdo_pgsql pgsql mbstring exif pcntl bcmath gd curl
 
 # Install Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer

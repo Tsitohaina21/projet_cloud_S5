@@ -1,0 +1,38 @@
+# Fichiers sensibles Firebase
+firebase-service-account.json
+*-firebase-adminsdk-*.json
+
+# Variables d'environnement
+.env
+.env.local
+.env.production
+
+# Dépendances
+/vendor/
+node_modules/
+
+# Logs
+*.log
+error_log
+access_log
+
+# Fichiers système
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDE
+.vscode/
+.idea/
+*.sublime-*
+
+# Cache
+.cache/
+tmp/
+temp/
+
+# Build
+/dist/
+/build/

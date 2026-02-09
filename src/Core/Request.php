@@ -30,6 +30,11 @@ class Request
         return $this->body;
     }
 
+    public function json(): array
+    {
+        return $this->body();
+    }
+
     public function get(string $key, $default = null)
     {
         return $this->body()[$key] ?? $default;

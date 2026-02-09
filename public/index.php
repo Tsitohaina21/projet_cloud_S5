@@ -9,6 +9,8 @@ use App\Core\Request;
 use App\Core\Response;
 use App\Controllers\AuthController;
 use App\Controllers\UserController;
+use App\Controllers\SignalementController;
+use App\Controllers\SyncController;
 use Dotenv\Dotenv;
 
 // Load environment variables
@@ -25,7 +27,7 @@ set_error_handler(function ($severity, $message, $file, $line) {
 
 // CORS headers
 header('Access-Control-Allow-Origin: *');
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, OPTIONS');
+header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH, OPTIONS');
 header('Access-Control-Allow-Headers: Content-Type, Authorization');
 header('Content-Type: application/json');
 
@@ -61,6 +63,22 @@ $router->delete('/api/user/account', [UserController::class, 'deleteAccount']);
 
 // Admin routes
 $router->post('/api/admin/unlock-user', [UserController::class, 'unlockUser']);
+$router->post('/api/admin/users/create', [UserController::class, 'createUser']);
+$router->get('/api/admin/users', [UserController::class, 'getAllUsers']);
+$router->put('/api/admin/users/{id}/role', [UserController::class, 'updateUserRole']);
+
+// Signalement routes
+$router->get('/api/signalements', [SignalementController::class, 'getAll']);
+$router->post('/api/signalements', [SignalementController::class, 'create']);
+$router->get('/api/signalements/{id}', [SignalementController::class, 'getById']);
+$router->put('/api/signalements/{id}', [SignalementController::class, 'update']);
+$router->patch('/api/signalements/{id}/status', [SignalementController::class, 'updateStatus']);
+$router->delete('/api/signalements/{id}', [SignalementController::class, 'delete']);
+$router->get('/api/stats', [SignalementController::class, 'getStats']);
+$router->get('/api/stats/delays', [SignalementController::class, 'getDelayStats']);
+
+// Sync routes
+$router->post('/api/sync/firebase', [SyncController::class, 'syncWithFirebase']);
 
 // Documentation
 $router->get('/api/docs', function () use ($response) {

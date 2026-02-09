@@ -19,8 +19,8 @@ class User
 
     public function create(array $data): ?array
     {
-        $sql = "INSERT INTO users (email, password_hash, first_name, last_name) 
-                VALUES (:email, :password_hash, :first_name, :last_name) 
+        $sql = "INSERT INTO users (email, password_hash, first_name, last_name, role, temp_password) 
+                VALUES (:email, :password_hash, :first_name, :last_name, :role, :temp_password) 
                 RETURNING *";
 
         $stmt = $this->db->prepare($sql);
@@ -28,7 +28,9 @@ class User
             'email' => $data['email'],
             'password_hash' => $data['password_hash'],
             'first_name' => $data['first_name'] ?? null,
-            'last_name' => $data['last_name'] ?? null
+            'last_name' => $data['last_name'] ?? null,
+            'role' => $data['role'] ?? 'user',
+            'temp_password' => $data['temp_password'] ?? null,
         ]);
 
         return $stmt->fetch(PDO::FETCH_ASSOC) ?: null;
@@ -83,5 +85,10 @@ class User
         $stmt->execute(['email' => $email]);
 
         return $stmt->fetchColumn() > 0;
+    }
+
+    public function getConnection(): PDO
+    {
+        return $this->db;
     }
 }

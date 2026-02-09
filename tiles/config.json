@@ -1,0 +1,16 @@
+{
+  "options": {
+    "paths": {
+      "root": "",
+      "fonts": "fonts",
+      "sprites": "",
+      "styles": "",
+      "mbtiles": ""
+    }
+  },
+  "data": {
+    "antananarivo": {
+      "mbtiles": "antananarivo.mbtiles"
+    }
+  }
+}

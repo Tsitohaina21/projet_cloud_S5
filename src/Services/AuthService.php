@@ -18,6 +18,8 @@ class AuthService
     private int $maxAttempts;
     private int $lockoutDuration;
     private int $sessionLifetime;
+    private bool $firebaseEnabled;
+    private ?string $firebaseApiKey;
 
     public function __construct()
     {
@@ -27,19 +29,26 @@ class AuthService
         $this->maxAttempts = (int)($_ENV['MAX_LOGIN_ATTEMPTS'] ?? 3);
         $this->lockoutDuration = (int)($_ENV['LOCKOUT_DURATION'] ?? 900);
         $this->sessionLifetime = (int)($_ENV['SESSION_LIFETIME'] ?? 3600);
+        $this->firebaseEnabled = filter_var($_ENV['FIREBASE_ENABLED'] ?? 'false', FILTER_VALIDATE_BOOLEAN);
+        $this->firebaseApiKey = $_ENV['FIREBASE_API_KEY'] ?? null;
     }
 
-    public function register(string $email, string $password, ?string $firstName, ?string $lastName): array
+    public function register(string $email, string $password, ?string $firstName, ?string $lastName, ?string $role = 'user'): array
     {
         if ($this->userModel->exists($email)) {
             throw new Exception('Email already registered');
+        }
+
+        if ($this->shouldUseFirebase()) {
+            $this->firebaseSignUp($email, $password);
         }
 
         $user = $this->userModel->create([
             'email' => $email,
             'password_hash' => password_hash($password, PASSWORD_BCRYPT),
             'first_name' => $firstName,
-            'last_name' => $lastName
+            'last_name' => $lastName,
+            'role' => $role
         ]);
 
         if (!$user) {
@@ -57,7 +66,21 @@ class AuthService
             throw new Exception('Account is locked due to too many failed login attempts. Please try again later or contact support.');
         }
 
+        if ($this->shouldUseFirebase()) {
+            $this->firebaseSignIn($email, $password);
+        }
+
         $user = $this->userModel->findByEmail($email);
+
+        if (!$user && $this->shouldUseFirebase()) {
+            $user = $this->userModel->create([
+                'email' => $email,
+                'password_hash' => password_hash($password, PASSWORD_BCRYPT),
+                'first_name' => null,
+                'last_name' => null,
+                'role' => 'user'
+            ]);
+        }
 
         if (!$user || !password_verify($password, $user['password_hash'])) {
             $this->recordLoginAttempt($email, $ip, false);
@@ -67,6 +90,12 @@ class AuthService
 
         if (!$user['is_active']) {
             throw new Exception('Account is inactive');
+        }
+
+        // Vérifier que c'est un manager AVANT de créer le token
+        if ($user['role'] !== 'manager') {
+            $this->recordLoginAttempt($email, $ip, false);
+            throw new Exception('Access reserved for managers only');
         }
 
         // Successful login - clear attempts
@@ -95,7 +124,101 @@ class AuthService
             'token' => $token,
             'expires_in' => $this->sessionLifetime,
             'user' => $user
-        ];
+        ];       
+    }
+
+    private function shouldUseFirebase(): bool
+    {
+        if (!$this->firebaseEnabled || empty($this->firebaseApiKey)) {
+            return false;
+        }
+
+        return $this->isInternetAvailable();
+    }
+
+    private function isInternetAvailable(): bool
+    {
+        $connected = @fsockopen('www.google.com', 80, $errno, $errstr, 1.5);
+        if ($connected) {
+            fclose($connected);
+            return true;
+        }
+
+        return false;
+    }
+
+    private function firebaseSignUp(string $email, string $password): array
+    {
+        return $this->firebaseRequest('accounts:signUp', [
+            'email' => $email,
+            'password' => $password,
+            'returnSecureToken' => true
+        ]);
+    }
+
+    private function firebaseSignIn(string $email, string $password): array
+    {
+        return $this->firebaseRequest('accounts:signInWithPassword', [
+            'email' => $email,
+            'password' => $password,
+            'returnSecureToken' => true
+        ]);
+    }
+
+    private function firebaseRequest(string $endpoint, array $payload): array
+    {
+        if (empty($this->firebaseApiKey)) {
+            throw new Exception('Firebase API key is missing');
+        }
+
+        $url = "https://identitytoolkit.googleapis.com/v1/{$endpoint}?key={$this->firebaseApiKey}";
+
+        $ch = curl_init($url);
+        curl_setopt_array($ch, [
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_POST => true,
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json'],
+            CURLOPT_POSTFIELDS => json_encode($payload),
+            CURLOPT_TIMEOUT => 5
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = (int)curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($response === false) {
+            throw new Exception('Firebase request failed: ' . $curlError);
+        }
+
+        $data = json_decode($response, true);
+
+        if ($httpCode >= 400) {
+            $message = $data['error']['message'] ?? 'Firebase request failed';
+            
+            // Si c'est une erreur de trop de tentatives, bloquer l'utilisateur localement
+            if ($message === 'TOO_MANY_ATTEMPTS_TRY_LATER' && isset($payload['email'])) {
+                $email = $payload['email'];
+                $lockedUntil = date('Y-m-d H:i:s', time() + $this->lockoutDuration);
+                
+                $pdo = $this->db->getConnection();
+                $sql = "INSERT INTO account_lockouts (email, locked_until, attempt_count) 
+                        VALUES (:email, :locked_until, :attempts)
+                        ON CONFLICT (email) 
+                        DO UPDATE SET locked_until = :locked_until, attempt_count = :attempts";
+                
+                $stmt = $pdo->prepare($sql);
+                $stmt->execute([
+                    'email' => $email,
+                    'locked_until' => $lockedUntil,
+                    'attempts' => 5
+                ]);
+            }
+            
+            throw new Exception($message);
+        }
+
+        return $data;
     }
 
     public function logout(string $token): bool
