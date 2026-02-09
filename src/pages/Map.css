@@ -1,0 +1,36 @@
+.map-content {
+  position: relative;
+  --offset-top: 0px;
+  --offset-bottom: 0px;
+}
+
+.stats-panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 10px 12px;
+  border-radius: 10px;
+  font-size: 12px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.15);
+  display: grid;
+  gap: 4px;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+}
+
+.report-hint {
+  position: absolute;
+  bottom: 88px;
+  right: 16px;
+  background: #1565c0;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+  z-index: 1000;
+}
