@@ -1,0 +1,25 @@
+@"
+# Dependencies
+identity-provider/vendor/
+mobile/node_modules/
+web-app/node_modules/
+
+# Android build
+mobile/android/.gradle/
+mobile/android/app/build/
+
+# Large files
+*.mbtiles
+Mr-Rojo-S5/
+
+# APK
+*.apk
+
+# Env
+.env
+*.env.local
+
+# OS
+Thumbs.db
+.DS_Store
+"@ | Out-File -Encoding utf8 .gitignore
