@@ -46,7 +46,8 @@ class AuthController
                 $data['email'],
                 $data['password'],
                 $data['first_name'] ?? null,
-                $data['last_name'] ?? null
+                $data['last_name'] ?? null,
+                $data['role'] ?? 'user'
             );
 
             $response->status(201)->json([

@@ -1,12 +1,22 @@
-FROM node:18-alpine
-
+FROM node:18-alpine AS build
 WORKDIR /app
-
-# Pour une application web simple avec un serveur HTTP
-RUN npm install -g http-server
-
+COPY package*.json ./
+RUN npm ci
 COPY . .
+RUN npm run build
 
-EXPOSE 8080
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
 
-CMD ["http-server", ".", "-p", "8080"]
+# SPA routing: redirect all requests to index.html
+RUN echo 'server { \
+    listen 80; \
+    root /usr/share/nginx/html; \
+    index index.html; \
+    location / { \
+        try_files $uri $uri/ /index.html; \
+    } \
+}' > /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
